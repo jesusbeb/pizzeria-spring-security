@@ -34,6 +34,9 @@ dependencies {
     // Spring Web, para crear la API Rest y exponer los servicios
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 
+    // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
     // Lombok
 	compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
