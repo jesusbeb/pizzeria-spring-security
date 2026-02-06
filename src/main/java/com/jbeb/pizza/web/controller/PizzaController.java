@@ -61,7 +61,9 @@ public class PizzaController {
 
     // http://localhost:8080/api/pizzas/available?sortBy=price&sortDirection=DESC -> Path donde indicamos a traves de
     // que columna se ordenara y si sera ASC o DESC, no enviamos page ni elements, asi que tomara los valores por defecto
+    // @CrossOrigin indica que este metodo recibira peticiones de otro origen y se le indica que origen
     @GetMapping("/available")
+    //@CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Page<PizzaEntity>> getAvailable(@RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "8") int elements,
                                                           @RequestParam(defaultValue = "price") String sortBy,

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 // Implementamos y configuramos nuestro propio SecurityFilterChain
 // Esta clase tendra toda la configuracion de seguridad del proyecto
@@ -20,6 +21,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults()) // activamos cors
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth // autoriza las peticiones http
                         .anyRequest().authenticated() // cualquier peticion necesitar estar autenticada
