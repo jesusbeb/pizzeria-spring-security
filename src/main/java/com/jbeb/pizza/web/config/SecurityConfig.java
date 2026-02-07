@@ -2,6 +2,7 @@ package com.jbeb.pizza.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,13 +19,17 @@ public class SecurityConfig {
     // tenga estado (Stateless + JWT) y su sistema de autenticacion se basara con tokens (JSON Web Tokens). La combinacion entre
     // Api Stateless y JWT funcionara siempre y cuando no se utilice una autenticacion basada en cookies, lo cual es un
     // riesgo de seguridad.
+    // Con requestMatchers creamos una regla para un tipo de peticion y enviamos a que path aplica. Permitimos, denegamos, autenticamos,...
+    // Con un * indicamos que aplica para el primer nivel en la siguiente subruta. Con ** indicamos que aplica a todos los niveles de subrutas
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults()) // activamos cors
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth // autoriza las peticiones http
-                        .anyRequest().authenticated() // cualquier peticion necesitar estar autenticada
+                        .requestMatchers(HttpMethod.GET, "/api/pizzas/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT).denyAll() // Denegamos completamente cualquier peticion PUT (autenticada o no autenticada) en toda la API
+                        .anyRequest().authenticated() // cualquier peticion (que no aplique a las configuraciones previas de requestMatchers) necesita estar autenticada
                 )
                 .httpBasic(Customizer.withDefaults()); // se autenticara con httpBasic
 
