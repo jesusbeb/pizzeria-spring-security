@@ -5,6 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -34,6 +40,28 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults()); // se autenticara con httpBasic
 
         return http.build();
+    }
+
+
+    // Hacemos una implementacion de UserDatilsService para crear nuestros propios usuarios en memoria
+    // Con @Bean, Spring reconocera que estamos usando usuarios propios y dejara de generar el usuario y la contraseña por defecto
+    // En .password indicamos el encoder que encripta la contraseña, ya que Spring lo pide
+    @Bean
+    public UserDetailsService memoryUsers(){
+        // Creamos un usuario
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password(passwordEncoder().encode("admin"))
+                .roles("ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(admin);
+    }
+
+
+    // Usamos BCryptPasswordEncoder que Spring provee para encriptar las contraseñas
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 
 }
