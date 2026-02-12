@@ -33,8 +33,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // activamos cors
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth // autoriza las peticiones http
-                        .requestMatchers(HttpMethod.GET, "/api/pizzas/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT).denyAll() // Denegamos completamente cualquier peticion PUT (autenticada o no autenticada) en toda la API
+                        .requestMatchers(HttpMethod.GET, "/api/pizzas/**").hasAnyRole("ADMIN", "CUSTOMER") // ADMIN y CUSTOMER pueden hacer GET en el path indicado
+                        .requestMatchers(HttpMethod.POST, "/api/pizzas/**").hasRole("ADMIN") // solo ADMIN puede hacer POST en el path indicado
+                        .requestMatchers(HttpMethod.PUT).hasRole("ADMIN") // Solo ADMIN puede hacer PUT en cualquier parte de la API
+                        .requestMatchers("/api/orders/**").hasRole("ADMIN") // Solo ADMIN puede hacer todos los metodos en el path indicado
                         .anyRequest().authenticated() // cualquier peticion (que no aplique a las configuraciones previas de requestMatchers) necesita estar autenticada
                 )
                 .httpBasic(Customizer.withDefaults()); // se autenticara con httpBasic
@@ -54,7 +56,15 @@ public class SecurityConfig {
                 .password(passwordEncoder().encode("admin"))
                 .roles("ADMIN")
                 .build();
-        return new InMemoryUserDetailsManager(admin);
+
+        // Usuario customer
+        UserDetails customer = User.builder()
+                .username("customer")
+                .password(passwordEncoder().encode("customer123"))
+                .roles("CUSTOMER")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin, customer);
     }
 
 
