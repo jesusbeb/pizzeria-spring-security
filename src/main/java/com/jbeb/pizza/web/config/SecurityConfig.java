@@ -45,27 +45,28 @@ public class SecurityConfig {
     }
 
 
-    // Hacemos una implementacion de UserDatilsService para crear nuestros propios usuarios en memoria
-    // Con @Bean, Spring reconocera que estamos usando usuarios propios y dejara de generar el usuario y la contraseña por defecto
-    // En .password indicamos el encoder que encripta la contraseña, ya que Spring lo pide
-    @Bean
-    public UserDetailsService memoryUsers(){
-        // Creamos un usuario
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-        // Usuario customer
-        UserDetails customer = User.builder()
-                .username("customer")
-                .password(passwordEncoder().encode("customer123"))
-                .roles("CUSTOMER")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, customer);
-    }
+    // Como actualmente se estan utilizando usuarios de la BD, deshabilitamos este metodo
+//    // Hacemos una implementacion de UserDatilsService para crear nuestros propios usuarios en memoria
+//    // Con @Bean, Spring reconocera que estamos usando usuarios propios y dejara de generar el usuario y la contraseña por defecto
+//    // En .password indicamos el encoder que encripta la contraseña, ya que Spring lo pide
+//    @Bean
+//    public UserDetailsService memoryUsers(){
+//        // Creamos un usuario
+//        UserDetails admin = User.builder()
+//                .username("admin")
+//                .password(passwordEncoder().encode("admin"))
+//                .roles("ADMIN")
+//                .build();
+//
+//        // Usuario customer
+//        UserDetails customer = User.builder()
+//                .username("customer")
+//                .password(passwordEncoder().encode("customer123"))
+//                .roles("CUSTOMER")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(admin, customer);
+//}
 
 
     // Usamos BCryptPasswordEncoder que Spring provee para encriptar las contraseñas
