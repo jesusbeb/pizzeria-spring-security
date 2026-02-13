@@ -36,7 +36,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/pizzas/**").hasAnyRole("ADMIN", "CUSTOMER") // ADMIN y CUSTOMER pueden hacer GET en el path indicado
                         .requestMatchers(HttpMethod.POST, "/api/pizzas/**").hasRole("ADMIN") // solo ADMIN puede hacer POST en el path indicado
                         .requestMatchers(HttpMethod.PUT).hasRole("ADMIN") // Solo ADMIN puede hacer PUT en cualquier parte de la API
-                        .requestMatchers("/api/orders/**").hasRole("ADMIN") // Solo ADMIN puede hacer todos los metodos en el path indicado
+                        .requestMatchers("/api/orders/random").hasAuthority("random_order") // Esta regla se genera para que los customer puedan hacer un pedido de la pizza random, ya que la regla de abajo solo permite a los administradores usar el controller orders
+                        .requestMatchers("/api/orders/**").hasRole("ADMIN") // Solo ADMIN puede hacer todos los metodos en el path indicado. Se coloca despues de la regla anterior ya que de lo contrario la invalidaria
                         .anyRequest().authenticated() // cualquier peticion (que no aplique a las configuraciones previas de requestMatchers) necesita estar autenticada
                 )
                 .httpBasic(Customizer.withDefaults()); // se autenticara con httpBasic
