@@ -5,6 +5,7 @@ import com.jbeb.pizza.persistence.projection.OrderSummary;
 import com.jbeb.pizza.persistence.repository.OrderRepository;
 import com.jbeb.pizza.service.dto.RandomOrderDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,8 @@ public class OrderService {
     }
 
     // Metodo para obtener las ordenes de un cliente especificado por su id
+    // Con @Secured indicamos a que roles se les permite ejecutar este metodo, sin importar la configuracion que tenga filterChain
+    @Secured("ROLE_ADMIN")
     public List<OrderEntity> getCustomerOrders(String idCustomer){
         return this.orderRepository.findCustomerOrders(idCustomer);
     }

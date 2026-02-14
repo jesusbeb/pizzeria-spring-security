@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 // Implementamos y configuramos nuestro propio SecurityFilterChain
 // Esta clase tendra toda la configuracion de seguridad del proyecto
+// Habilitamos @EnableMethodSecurity para que Spring pueda controlar anotaciones como @Secured que esten en los Service
 @Configuration
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
     // Metodo
@@ -33,6 +36,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // activamos cors
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth // autoriza las peticiones http
+                        .requestMatchers("/api/customers/**").hasAnyRole("ADMIN", "CUSTOMER") // Permitimos hacer peticiones en el path indicado a ADMIN y CUSTOMER
                         .requestMatchers(HttpMethod.GET, "/api/pizzas/**").hasAnyRole("ADMIN", "CUSTOMER") // ADMIN y CUSTOMER pueden hacer GET en el path indicado
                         .requestMatchers(HttpMethod.POST, "/api/pizzas/**").hasRole("ADMIN") // solo ADMIN puede hacer POST en el path indicado
                         .requestMatchers(HttpMethod.PUT).hasRole("ADMIN") // Solo ADMIN puede hacer PUT en cualquier parte de la API
