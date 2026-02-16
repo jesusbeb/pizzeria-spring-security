@@ -37,6 +37,9 @@ dependencies {
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // JSON Web Token
+    implementation("com.auth0:java-jwt:4.3.0")
+
     // Lombok
 	compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
