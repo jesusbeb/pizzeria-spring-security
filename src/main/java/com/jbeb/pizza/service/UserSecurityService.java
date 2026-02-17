@@ -36,6 +36,9 @@ public class UserSecurityService implements UserDetailsService {
         UserEntity userEntity = this.userRepository.findById(username)
                 .orElseThrow( () -> new UsernameNotFoundException("User " + username + " not found!!!") );
 
+        // Imprimimos solo para verificar que el proceso de loguear llega por este servicio que creamos
+        System.out.println(userEntity);
+
         // Obtenemos la lista de roles del usuario, aplicamos stream, mapeamos para obtener los nombres de sus roles y
         // los agregamos a un nuevo Array de Strings
         String[] roles = userEntity.getRoles().stream().map(UserRoleEntity::getRole).toArray(String[]::new);

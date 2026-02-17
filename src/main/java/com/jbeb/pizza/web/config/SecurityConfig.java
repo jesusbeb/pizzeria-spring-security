@@ -3,9 +3,12 @@ package com.jbeb.pizza.web.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,6 +39,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // activamos cors
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth // autoriza las peticiones http
+                        .requestMatchers("/api/auth/**").permitAll() // Permitimos todas las peticiones de este path, si no ningun usuario podra logearse
                         .requestMatchers("/api/customers/**").hasAnyRole("ADMIN", "CUSTOMER") // Permitimos hacer peticiones en el path indicado a ADMIN y CUSTOMER
                         .requestMatchers(HttpMethod.GET, "/api/pizzas/**").hasAnyRole("ADMIN", "CUSTOMER") // ADMIN y CUSTOMER pueden hacer GET en el path indicado
                         .requestMatchers(HttpMethod.POST, "/api/pizzas/**").hasRole("ADMIN") // solo ADMIN puede hacer POST en el path indicado
@@ -47,6 +51,12 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults()); // se autenticara con httpBasic
 
         return http.build();
+    }
+
+    // AuthenticacionManager para autenticar usuarios. Devuelve un objeto autenticado si es correcto. Lanza una excepcion si falla
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
+        return configuration.getAuthenticationManager();
     }
 
 
