@@ -8,6 +8,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 // Implementamos y configuramos nuestro propio SecurityFilterChain
@@ -24,6 +27,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
+    private final JwtFilter jwtFilter;
+
+    // Constructor
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
+
 
     // Metodo
     // Al final retornamos la configuracion que realizamos. build() puede lanzar una excepcion en la firma del metodo
@@ -38,6 +48,9 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults()) // activamos cors
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Sin estado, no almacenara sesiones. Cada que recibe una peticion se va a validar como una nueva peticion
+                )
                 .authorizeHttpRequests(auth -> auth // autoriza las peticiones http
                         .requestMatchers("/api/auth/**").permitAll() // Permitimos todas las peticiones de este path, si no ningun usuario podra logearse
                         .requestMatchers("/api/customers/**").hasAnyRole("ADMIN", "CUSTOMER") // Permitimos hacer peticiones en el path indicado a ADMIN y CUSTOMER
@@ -48,7 +61,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/**").hasRole("ADMIN") // Solo ADMIN puede hacer todos los metodos en el path indicado. Se coloca despues de la regla anterior ya que de lo contrario la invalidaria
                         .anyRequest().authenticated() // cualquier peticion (que no aplique a las configuraciones previas de requestMatchers) necesita estar autenticada
                 )
-                .httpBasic(Customizer.withDefaults()); // se autenticara con httpBasic
+                //.httpBasic(Customizer.withDefaults()); // se autenticara con httpBasic
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Ahora la seguridad estara basada en JWT
+                // con addFilterBefore agregamos nuestro jwtFilter antes del BasicAuthenticationFilter pero que por
+                // convencion, se indica como UsernamePasswordAuthenticationFilter. BasicAuthenticationFilter es el primer
+                // filtro de seguridad que tiene Spring
 
         return http.build();
     }
